@@ -1,0 +1,310 @@
+import os
+import pymysql
+
+
+print("----------------------------------------------------------------")
+print("")
+print("데이터 베이스 기말 프로젝트 _ 202012316 이지영, 201811248 노유빈 ")
+print("")
+print("----------------------------------------------------------------")
+print("")
+
+returnNum = 0
+
+def open_db():
+    conn = pymysql.connect(host="localhost", user="root", password="1019", db="final", charset="utf8")
+    curs = conn.cursor(pymysql.cursors.DictCursor)
+
+    return conn, curs
+
+def cls():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    # now, to clear the screen : cls()
+
+
+def orderBY():
+    print(" 1. 연도 순 정렬(ORDERBY) \n 2. 개봉날짜 순 정렬(ORDERBY)  \n 3. 가나다 순 정렬(ORDERBY)")
+    print("")
+    print("----------------------------------------------------------------")
+    getnum = input()
+    while(getnum != "1" and getnum != "2" and getnum != "3"):
+        getnum = input()
+        print("다시 입력해주세요.")
+    return getnum
+
+
+def console():
+
+    conn, cur = open_db()
+
+    while True:
+        # acls()
+        print(" a. 영화 정보 조회 \n b. 배우의 출연 영화 조회  \n c. 감독의 제작 영화 조회 \n d. 장르에 해당하는 영화 조회 \n e. 개봉 연도를 기준으로 조회 \n f. 영화에 나온 배우 조회 \n g. 영화를 제작한 감독 조회 \n h. 영화의 명대사 조회 \n i. 영화의 리뷰 조회 \n q. 종료")
+        print("")
+        print("----------------------------------------------------------------")
+
+        temp = input()
+        # 종료
+        if temp == "q":
+            cur.close()
+            conn.close()
+            break
+
+        # 영화 제목 검색
+        elif temp == "a":
+            print("----------------------------------------------------------------")
+            print("\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            returnNUM = int(float(returnNUM))
+            print("----------------------------------------------------------------\n")
+
+            sql = ""
+
+            title = input("영화 제목을 입력하세요. : ")
+
+            if returnNUM == 1:
+                sql = """select distinct *
+                                from movie m
+                                where m.title = '%s' order by m.enter_date;""" % (title)
+            if returnNUM == 2:
+                sql = """select distinct * from m.title = '%s' order by m.opening_date;""" % (title)
+            if returnNUM == 3:
+                sql = """select distinct * from m.title = '%s' order by m.title;""" % (title)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('코드 : %s, 제목 : %s, 영어 제목 : %s, 네티즌 평점 : %s, 관람객 평점 : %s, 리뷰 수 : %s, 상영 시간 : %s, 개봉 일자 : %s, 이미지 링크 : %s ' % (r['code_movie'], r['title'], r['title_English'], r['netizen_rate'], r['audience_rate'], r['review_count'], r['playing_time'], r['opening_date'], r['image']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+
+        # 배우가 출연한 영화 검색
+        elif temp == "b":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            returnNUM = int(float(returnNUM))
+            print("----------------------------------------------------------------\n")
+            sql = ""
+            actor = input("배우 이름을 입력하세요. : ")
+            if returnNUM == 1:
+                sql = """select distinct * from movie m, actor a where m.code_movie=a.code_movie and a.actor_name = '%s' group by m.code_movie order by m.enter_date;""" % (actor)
+            if returnNUM == 2:
+                sql = """select distinct * from movie m, actor a where m.code_movie=a.code_movie and a.actor_name = '%s' group by m.code_movie order by m.opening_date;""" % (actor)
+            if returnNUM == 3:
+                sql = """select distinct * from movie m, actor a where m.code_movie=a.code_movie and a.actor_name = '%s' group by m.code_movie order by m.title;""" % (actor)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('배우 코드 : %s, 영화 코드 : %s, 영화 이름 : %s, 이름 : %s, 역할 : %s, 배역 이름 : %s ' % (
+                    r['actor_code'], r['code_movie'], r['title'], r['actor_name'], r['role'], r['casting_name']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+        # 감독이 제작한 영화 검색
+        elif temp == "c":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            returnNUM = int(float(returnNUM))
+            print("----------------------------------------------------------------\n")
+            sql = ""
+            director = input("감독 이름을 입력하세요. : ")
+            if returnNUM == 1:
+                sql = """select distinct * from movie m, director d where m.code_movie=d.code_movie and d.name_korean = '%s' group by m.code_movie order by m.enter_date;""" % (
+                    director)
+            if returnNUM == 2:
+                sql = """select distinct * from movie m, director d where m.code_movie=d.code_movie and d.name_korean = '%s'  group by m.code_movie order by m.opening_date;""" % (
+                    director)
+            if returnNUM == 3:
+                sql = """select distinct * from movie m, director d where m.code_movie=d.code_movie and d.name_korean = '%s' group by m.code_movie order by m.title;""" % (
+                    director)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('감독 코드 : %s, 영화 코드 : %s, 영화 이름 : %s , 이름 : %s, 영어 이름 : %s, 제작 영화 이름 : %s ' % (
+                    r['director_code'], r['code_movie'], r['title'], r['name_korean'], r['name_English'], r['work_name']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+
+        # 장르 검색
+        elif temp == "d":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            print("----------------------------------------------------------------\n")
+            returnNUM = int(float(returnNUM))
+            sql = ""
+
+            genre = input("영화 장르를 입력하세요. : ")
+            if returnNUM == 1:
+                sql = """select distinct * from movie m, genre g where m.code_movie=g.code_movie and g.genre =  '%s'  group by m.code_movie order by m.enter_date;""" % (genre)
+            if returnNUM == 2:
+                sql = """select distinct * from movie m, genre g where m.code_movie=g.code_movie and g.genre =  '%s' group by m.code_movie order by m.opening_date;""" % (genre)
+            if returnNUM == 3:
+                sql = """select distinct * from movie m, genre g where m.code_movie=g.code_movie and g.genre =  '%s' group by m.code_movie  order by m.title;""" % (genre)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('영화 코드 : %s, 영화 이름 : %s , 장르 : %s ' % (
+                    r['code_movie'], r['title'], r['genre']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+        # 개봉 연도를 기준으로 검색
+        elif temp == "e":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            print("----------------------------------------------------------------\n")
+            returnNUM = int(float(returnNUM))
+            sql = ""
+
+            openining_date = input("개봉 연도를 입력하세요. : ")
+            if returnNUM == 1:
+                sql = """select distinct * from movie m where year(m.opening_date) = '%s' group by m.code_movie order by m.enter_date;""" % (openining_date)
+            if returnNUM == 2:
+                sql = """select distinct * from movie m where year(m.opening_date) = '%s' group by m.code_movie order by m.opening_date;""" % (openining_date)
+            if returnNUM == 3:
+                sql = """select distinct * from movie m where year(m.opening_date) = '%s' group by m.code_movie order by m.title;""" % (openining_date)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('영화 코드 : %s, 영화 이름 : %s , 개봉연도 : %s ' % (
+                    r['code_movie'], r['title'], r['opening_date']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+        elif temp == "g":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            print("----------------------------------------------------------------\n")
+            returnNUM = int(float(returnNUM))
+            sql = ""
+
+            tmp = input("영화 제목을 입력해주세요 : ")
+            if returnNUM == 1:
+                sql = """select distinct *
+                        from movie m, director d
+                        where m.code_movie = d.code_movie and m.title = '%s'
+                        order by m.enter_date;""" % (tmp)
+            if returnNUM == 2:
+                sql = """select distinct *
+                        from movie m, director d
+                        where m.code_movie = d.code_movie and m.title = '%s' 
+                        order by m.opening_date;""" % (tmp)
+            if returnNUM == 3:
+                sql = """select distinct *
+                        from movie m, director d
+                        where m.code_movie = d.code_movie and m.title = '%s'
+                        order by m.title;""" % (tmp)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('영화 코드 : %s, 영화 이름 : %s ,감독 코드 : %s, 감독 이름 : %s ' % (
+                    r['code_movie'], r['title'], r['director_code'],r['name_korean']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+        elif temp == "f":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            print("----------------------------------------------------------------\n")
+            returnNUM = int(float(returnNUM))
+            sql = ""
+
+            tmp = input("영화 제목을 입력해주세요 : ")
+            if returnNUM == 1:
+                sql = """select distinct *
+                        from movie m, actor a
+                        where m.code_movie = a.code_movie and m.title = '%s'
+                        order by m.enter_date;""" % (tmp)
+            if returnNUM == 2:
+                sql = """select distinct *
+                        from movie m, actor a
+                        where m.code_movie = a.code_movie and m.title = '%s'
+                        order by m.opening_date;""" % (tmp)
+            if returnNUM == 3:
+                sql = """select distinct *
+                        from movie m, actor a
+                        where m.code_movie = a.code_movie and m.title = '%s'
+                        order by m.title;""" % (tmp)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('영화 코드 : %s, 영화 이름 : %s , 배우 이름 : %s, 역할 : %s, 배역 이름 : %s' % (
+                    r['code_movie'], r['title'], r['actor_name'], r['role'], r['casting_name']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+        # 명대사 검색
+        elif temp == "h":
+            print("----------------------------------------------------------------\n")
+            returnNUM = orderBY()
+            print(returnNUM)
+            print("----------------------------------------------------------------\n")
+            returnNUM = int(float(returnNUM))
+            sql = ""
+
+            famous_line = input("영화 제목을 입력하세요 : ")
+            if returnNUM == 1:
+                sql = """select * from movie m, famous_lines f where m.code_movie = f.code_movie and m.title = '%s' order by m.enter_date;""" % (famous_line)
+            if returnNUM == 2:
+                sql = """select * from movie m, famous_lines f where m.code_movie = f.code_movie and m.title = '%s' order by m.opening_date;""" % (famous_line)
+            if returnNUM == 3:
+                sql = """select * from movie m, famous_lines f where m.code_movie = f.code_movie and m.title = '%s' order by m.title;""" % (famous_line)
+
+            cur.execute(sql)
+            r = cur.fetchone()
+
+            while r:
+                print('영화 코드 : %s, 영화 이름 : %s , 명대사 : %s' % (
+                    r['code_movie'], r['title'], r['famous_line']))
+                r = cur.fetchone()
+
+            print("----------------------------------------------------------------")
+            print("\n")
+
+        else:
+            print("다시 입력해주세요.")
+
+
+
+if __name__ == '__main__':
+
+    console()
+
+
+
