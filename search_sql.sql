@@ -1,12 +1,12 @@
-#영화 제목을 입력하고, 매칭되는 영화 정보를 검색
-select distinct * from MOVIE m, TITLES_AKAS t where m.MID=t.MID and t.TITLE='%s' 
+#영화 제목을 입력하고, 매칭되는 영화 정보를 검색#
+select distinct * from movie m, genre g where m.code_movie=g.code_movie and m.title='%s' 
 
-#특정 배우가 출연하는 영화를 별점이 높은 순으로 검색 
-select * from MOVIE m, REVIEW r, 
-	(SELECT distinct c.MID from CASTING C 
-	where c.NID IN (SELECT n.NID from NAME_INFO n where n.NNAME='Ingmar Bergman') and c.category='actor') temp 
+#특정 배우가 출연하는 영화를 네티즌 별점이 높은 순으로 검색 
+select m.title from movie m, 
+	(SELECT distinct c.code_movie from actor C
+	where c.actor_id IN (SELECT n.NID from NAME_INFO n where c.actor_name ='Ingmar Bergman') and c.category='actor') temp 
 where m.MID=temp.MID and temp.MID=r.MID 
-order by r.AVERAGE_RATING desc;
+order by m.netizen_rate desc;
 
 #특정 감독이 제작한 영화를 개봉 연도 순으로 검색 
 select * 
@@ -53,3 +53,6 @@ select * from MOVIE m,
 	where c.NID IN (SELECT n.NID from NAME_INFO n where n.NNAME='%s')) temp 
 where m.MID=temp.MID 
 order by m.START_YEAR
+
+
+
