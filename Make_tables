@@ -1,0 +1,83 @@
+//////////// MOVIE /////////////////
+
+
+CREATE TABLE `movie` (
+  `code_movie` int NOT NULL,
+  `title` varchar(80) DEFAULT NULL,
+  `title_English` varchar(80) DEFAULT NULL,
+  `netizen_rate` varchar(80) DEFAULT NULL,
+  `audience_rate` varchar(80) DEFAULT NULL,
+  `review_count` int DEFAULT NULL,
+  `playing_time` int DEFAULT NULL,
+  `opening_date` varchar(500) DEFAULT NULL,
+  `image` varchar(500) DEFAULT NULL,
+  `enter_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`code_movie`),
+  UNIQUE KEY `code_movie_UNIQUE` (`code_movie`),
+  KEY `title_index` (`title`) /*!80000 INVISIBLE */,
+  KEY `netizen_rate_index` (`netizen_rate`),
+  KEY `audience_rate_index` (`audience_rate`),
+  KEY `playing_time_index` (`playing_time`),
+  KEY `opening_date_index` (`opening_date`)
+)
+
+
+///////////// GENRE /////////////////////////
+
+CREATE TABLE `genre` (
+  `genre_id` int NOT NULL AUTO_INCREMENT,
+  `code_movie` int DEFAULT NULL,
+  `genre` varchar(45) DEFAULT NULL,
+  `enter_date` varchar(45) DEFAULT 'now()',
+  PRIMARY KEY (`genre_id`),
+  KEY `code_movie` (`code_movie`),
+  CONSTRAINT `genre_ibfk_1` FOREIGN KEY (`code_movie`) REFERENCES `movie` (`code_movie`)
+)
+
+
+//////////////// FAMOUS_LINES (한줄평) //////////////////////////
+
+CREATE TABLE `famous_lines` (
+  `line_id` int NOT NULL,
+  `code_movie` int DEFAULT NULL,
+  `famous_line` varchar(500) DEFAULT NULL,
+  `enter_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`line_id`),
+  KEY `code_movie` (`code_movie`),
+  CONSTRAINT `famous_lines_ibfk_1` FOREIGN KEY (`code_movie`) REFERENCES `movie` (`code_movie`)
+)
+
+
+/////////////////////// DIRECTOR /////////////////////////
+
+
+CREATE TABLE `director` (
+  `director_id` int NOT NULL AUTO_INCREMENT,
+  `director_code` int DEFAULT NULL,
+  `code_movie` int DEFAULT NULL,
+  `name_korean` varchar(45) DEFAULT NULL,
+  `name_English` varchar(200) DEFAULT NULL,
+  `work_name` varchar(200) DEFAULT NULL,
+  `enter_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`director_id`)
+)
+
+
+//////////////////// ACOTR //////////////////////
+
+
+CREATE TABLE `actor` (
+  `actor_id` int NOT NULL AUTO_INCREMENT,
+  `code_movie` int DEFAULT NULL,
+  `actor_code` int DEFAULT NULL,
+  `actor_name` varchar(45) DEFAULT NULL,
+  `role` varchar(45) DEFAULT NULL,
+  `casting_name` varchar(45) DEFAULT NULL,
+  `enter_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`actor_id`),
+  KEY `code_movie` (`code_movie`),
+  CONSTRAINT `code_movie` FOREIGN KEY (`code_movie`) REFERENCES `movie` (`code_movie`)
+)
+
+
+
